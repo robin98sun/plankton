@@ -16,7 +16,7 @@ func NewMouth() *Mouth {
 	return &Mouth{}
 }
 
-func (w *Mouth) NewInput() interface{} {
+func (w *Mouth) ShapeInput() interface{} {
 	return &utils.MouthInput{}
 }
 

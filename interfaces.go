@@ -11,9 +11,9 @@ func main() {
 	jade.Verbose(true)
 
 	worker := eat.NewMouth()
-	jade.SetWorkerModule(worker)
+	jade.SetDefaultWorkerModule(worker)
 
 	aggregator := digest.NewStomach()
-	jade.SetAggregatorModule(aggregator)
+	jade.SetDefaultAggregatorModule(aggregator)
 	jade.CreateHTTPServer()
 }
