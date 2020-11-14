@@ -1,4 +1,4 @@
 FROM debian
-COPY ./aggregator /aggregator
+COPY ./plankton /plankton
 EXPOSE 8080
-ENTRYPOINT /aggregator
+ENTRYPOINT /plankton

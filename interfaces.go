@@ -1,9 +1,9 @@
 package main
 
 import (
-	"aces/jadesdk"
 	"aces/plankton/digest"
 	"aces/plankton/eat"
+	"uta.edu/aces/jadesdk"
 )
 
 func main() {
