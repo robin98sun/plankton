@@ -64,7 +64,7 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 			for ; j < len(subtaskResult.Pieces); j++ {
 				result.Pieces = append(result.Pieces, subtaskResult.Pieces[j])
 			}
-			result.Size += subtaskResult.Size
+			result.Size = subtaskResult.Size + cumulation.Size
 			log.Println("[stomach] cleared subtask data")
 			log.Println("[stomach] merging done")
 		}
