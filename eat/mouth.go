@@ -14,9 +14,8 @@ func NewMouth() *Mouth {
 }
 
 type MouthInput struct {
-	Cmd  string      `json:"cmd,omitempty"`
-	Size int         `json:"size,omitempty"`
-	Args interface{} `json:"args,omitempty"`
+	Cmd  string `json:"cmd,omitempty"`
+	Size int    `json:"size,omitempty"`
 }
 
 type StomachInput struct {
