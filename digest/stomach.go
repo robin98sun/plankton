@@ -42,12 +42,12 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 			i := 0
 			j := 0
 
+			result = &StomachInput{
+				Cmd: subtaskResult.Cmd,
+			}
 			log.Println("[stomach] start merging")
 			log.Printf("[stomach] length of cumulation: %v, length of subtask: %v", len(cumulation.Pieces), len(subtaskResult.Pieces))
 			for i < len(cumulation.Pieces) && j < len(subtaskResult.Pieces) {
-				log.Printf("[stomach] i=%v, j=%v", i, j)
-				log.Printf("[stomach] cumulation.Pieces[%v]={%v}", i, cumulation.Pieces[i])
-				log.Printf("[stomach] subtaskResult.Pieces[%v]={%v}", j, cumulation.Pieces[j])
 				if subtaskResult.Pieces[j] < cumulation.Pieces[i] {
 					result.Pieces = append(result.Pieces, subtaskResult.Pieces[j])
 					j++
@@ -64,7 +64,9 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 			for ; j < len(subtaskResult.Pieces); j++ {
 				result.Pieces = append(result.Pieces, subtaskResult.Pieces[j])
 			}
+			result.Size += subtaskResult.Size
 			log.Println("[stomach] cleared subtask data")
+			log.Println("[stomach] merging done")
 		}
 	}
 
