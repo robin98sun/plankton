@@ -1,12 +1,7 @@
 package digest
 
 import (
-	// "encoding/json"
 	"log"
-	// "math/rand"
-	// "strconv"
-	// "time"
-	"aces/plankton/utils"
 )
 
 type Stomach struct {
@@ -16,27 +11,56 @@ func NewStomach() *Stomach {
 	return &Stomach{}
 }
 
+type StomachInput struct {
+	Cmd    string  `json:"cmd,omitempty"`
+	Size   int     `json:"size,omitempty"`
+	Pieces []int64 `json:"pieces,omitempty"`
+}
+
 func (w *Stomach) ShapeResultOfSubtask() interface{} {
-	return &utils.StomachInput{}
+	return &StomachInput{}
 }
 
 func (w *Stomach) ShapeCumulation() interface{} {
-	return &utils.StomachInput{}
+	return &StomachInput{}
 }
 
-func (w *Stomach) Handler(cumulation interface{}, previousResults []interface{}, subtaskResult interface{}) (interface{}, error) {
-	log.Println("stomach received input:", subtaskResult.(*utils.StomachInput))
-	if subtaskResult == nil {
-		return cumulation, nil
+func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interface{}, subtaskResultInst interface{}) (interface{}, error) {
+	if subtaskResultInst == nil {
+		return cumulationInst, nil
 	}
-	var result *utils.StomachInput
-	if cumulation == nil {
-		result = subtaskResult.(*utils.StomachInput)
-	} else {
-		result = cumulation.(*utils.StomachInput)
-		result.Key1 += ", " + subtaskResult.(*utils.StomachInput).Key1
-		result.Key3 += ", " + subtaskResult.(*utils.StomachInput).Key3
-		result.Key2 += subtaskResult.(*utils.StomachInput).Key2
+	subtaskResult := subtaskResultInst.(*StomachInput)
+	var result *StomachInput
+	var cumulation *StomachInput
+	if cumulationInst != nil {
+		cumulation = cumulationInst.(*StomachInput)
+	}
+	if subtaskResult.Cmd == "gen and merge" {
+		if cumulation == nil {
+			result = subtaskResult
+		} else {
+			i := 0
+			j := 0
+
+			for i < len(cumulation.Pieces) && j < len(subtaskResult.Pieces) {
+				if subtaskResult.Pieces[j] < cumulation.Pieces[i] {
+					result.Pieces = append(result.Pieces, subtaskResult.Pieces[j])
+					j++
+				} else {
+					result.Pieces = append(result.Pieces, cumulation.Pieces[i])
+					i++
+				}
+			}
+			log.Println("[stomach] common part done")
+			for ; i < len(cumulation.Pieces); i++ {
+				result.Pieces = append(result.Pieces, cumulation.Pieces[i])
+			}
+			log.Println("[stomach] cleared cumulation")
+			for ; j < len(subtaskResult.Pieces); j++ {
+				result.Pieces = append(result.Pieces, subtaskResult.Pieces[j])
+			}
+			log.Println("[stomach] cleared subtask data")
+		}
 	}
 
 	return result, nil
