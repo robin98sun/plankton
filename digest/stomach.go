@@ -2,6 +2,7 @@ package digest
 
 import (
 	"log"
+	"time"
 )
 
 type Stomach struct {
@@ -13,8 +14,11 @@ func NewStomach() *Stomach {
 
 type StomachInput struct {
 	Cmd    string  `json:"cmd,omitempty"`
-	Size   int     `json:"size,omitempty"`
+	EatTime   int64  `json:"eatTime,omitempty"`
+	Size      int64  `json:"size,omitempty"`
 	Pieces []int64 `json:"pieces,omitempty"`
+	DigestTime int64 `json:"digestTime,omitempty"`
+	DigestFactor int64 `json:"digestFactor,omitempty"`
 }
 
 func (w *Stomach) ShapeResultOfSubtask() interface{} {
@@ -30,21 +34,23 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 		return cumulationInst, nil
 	}
 	subtaskResult := subtaskResultInst.(*StomachInput)
-	var result *StomachInput
+	result := &StomachInput{
+		Cmd: subtaskResult.Cmd,
+		EatTime: subtaskResult.EatTime,
+	}
 	var cumulation *StomachInput
 	if cumulationInst != nil {
 		cumulation = cumulationInst.(*StomachInput)
 	}
-	if subtaskResult.Cmd == "gen and merge" {
+
+	// aggregate subtasks
+	if subtaskResult.Cmd == "gen and merge" || subtaskResult.Cmd == "gen and merge and wait"{
 		if cumulation == nil {
 			result = subtaskResult
 		} else {
 			i := 0
 			j := 0
 
-			result = &StomachInput{
-				Cmd: subtaskResult.Cmd,
-			}
 			log.Println("[stomach] start merging")
 			log.Printf("[stomach] length of cumulation: %v, length of subtask: %v", len(cumulation.Pieces), len(subtaskResult.Pieces))
 			for i < len(cumulation.Pieces) && j < len(subtaskResult.Pieces) {
@@ -67,6 +73,20 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 			result.Size = subtaskResult.Size + cumulation.Size
 			log.Println("[stomach] cleared subtask data")
 			log.Println("[stomach] merging done")
+		}
+	}
+
+	// wait some time
+	if subtaskResult.Cmd == "service time" || subtaskResult.Cmd == "gen and merge and wait" {
+		if subtaskResult.DigestTime > 0 {
+			timeToWait := subtaskResult.DigestTime
+			if subtaskResult.DigestFactor > 0 {
+				previousSubtaskCount := int64(len(previousResults))
+				timeToWait += previousSubtaskCount * subtaskResult.DigestFactor * timeToWait
+				result.DigestFactor = subtaskResult.DigestFactor
+			}
+			time.Sleep(time.Duration(timeToWait) * time.Millisecond)
+			result.DigestTime = timeToWait
 		}
 	}
 
