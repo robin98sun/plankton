@@ -8,7 +8,7 @@ import (
 
 func main() {
 	jade := jadesdk.NewJadeSDK()
-	jade.Verbose(true)
+	jade.Verbose(false)
 
 	worker := eat.NewMouth()
 	jade.SetDefaultWorkerModule(worker)
