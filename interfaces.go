@@ -9,7 +9,7 @@ import (
 
 func main() {
 	jade := jadesdk.NewJadeSDK()
-	jade.Verbose(true)
+	jade.Verbose(false)
 	// disable GC at runtime
 	// debug.SetGCPercent(-1)
 
