@@ -14,10 +14,10 @@ func NewStomach() *Stomach {
 
 type StomachInput struct {
 	Cmd    string  `json:"cmd,omitempty"`
-	EatTime   int64  `json:"eatTime,omitempty"`
+	EatTime   float64  `json:"eatTime,omitempty"`
 	Size      int64  `json:"size,omitempty"`
 	Pieces []int64 `json:"pieces,omitempty"`
-	DigestTime int64 `json:"digestTime,omitempty"`
+	DigestTime float64`json:"digestTime,omitempty"`
 	DigestFactor int64 `json:"digestFactor,omitempty"`
 }
 
@@ -44,7 +44,7 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 	}
 
 	// aggregate subtasks
-	if subtaskResult.Cmd == "gen and merge" || subtaskResult.Cmd == "gen and merge and wait"{
+	if subtaskResult.Cmd == "merge" || subtaskResult.Cmd == "gen and merge" || subtaskResult.Cmd == "gen and merge and wait"{
 		if cumulation == nil {
 			result = subtaskResult
 		} else {
@@ -81,8 +81,8 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 		if subtaskResult.DigestTime > 0 {
 			timeToWait := subtaskResult.DigestTime
 			if subtaskResult.DigestFactor > 0 {
-				previousSubtaskCount := int64(len(previousResults))
-				timeToWait += previousSubtaskCount * subtaskResult.DigestFactor * timeToWait
+				previousSubtaskCount := float64(len(previousResults))
+				timeToWait += previousSubtaskCount * float64(subtaskResult.DigestFactor) * timeToWait
 				result.DigestFactor = subtaskResult.DigestFactor
 			}
 			time.Sleep(time.Duration(timeToWait) * time.Millisecond)

@@ -15,19 +15,21 @@ func NewMouth() *Mouth {
 
 type MouthInput struct {
 	Cmd  string `json:"cmd,omitempty"`
-	Size int64    `json:"size,omitempty"`
-	MaxEatTime  int64    `json:"maxEatTime,omitempty"`
-	MinEatTime  int64    `json:"minEatTime,omitempty"`
-	DigestTime int64 `json:"digestTime,omitempty"`
+	Size int64  `json:"size,omitempty"`
+	StartPoint int64 `json:"startPoint,omitempty"`
+	EndPoint   int64 `json:"endPoint,omitempty"`
+	MaxEatTime int64 `json:"maxEatTime,omitempty"`
+	MinEatTime int64 `json:"minEatTime,omitempty"`
+	DigestTime float64 `json:"digestTime,omitempty"`
 	DigestFactor int64 `json:"digestFactor,omitempty"`
 }
 
 type StomachInput struct {
-	Cmd    string  `json:"cmd,omitempty"`
-	EatTime   int64  `json:"eatTime,omitempty"`
-	Size      int64  `json:"size,omitempty"`
-	Pieces []int64 `json:"pieces,omitempty"`
-	DigestTime int64 `json:"digestTime,omitempty"`
+	Cmd    string   `json:"cmd,omitempty"`
+	EatTime float64 `json:"eatTime,omitempty"`
+	Size    int64   `json:"size,omitempty"`
+	Pieces  []int64 `json:"pieces,omitempty"`
+	DigestTime float64 `json:"digestTime,omitempty"`
 	DigestFactor int64 `json:"digestFactor,omitempty"`
 }
 
@@ -41,10 +43,36 @@ func (w *Mouth) Handler(inputInst interface{}) (interface{}, error) {
 
 	feedStomach := &StomachInput{
 		Cmd:    input.Cmd,
-		EatTime:   input.Size,
+		EatTime:   float64(input.Size),
 	}
 	// do some job
-	if (input.Cmd == "gen and merge" || input.Cmd == "gen and merge and wait") && input.Size > 0 {
+	if (input.Cmd == "find prime numbers") {
+
+		is_prime_number := func(n int64) bool {
+			for i := int64(2); i<n; i++ {
+				if n % i == 0 {
+					return false
+				}
+			}
+			return true
+		}
+
+		startTime := time.Now()
+
+		prime_number_list := []int64{}
+		for i := input.StartPoint; i<= input.EndPoint; i++ {
+			if is_prime_number(i) {
+				prime_number_list = append(prime_number_list, i)
+			}
+		}
+
+		endTime := time.Now()
+		feedStomach.Pieces = prime_number_list
+		feedStomach.Size   = input.EndPoint - input.StartPoint + 1
+		feedStomach.EatTime = float64((endTime.Sub(startTime))*time.Millisecond)
+		feedStomach.Cmd = "merge"
+
+	} else if (input.Cmd == "gen and merge" || input.Cmd == "gen and merge and wait") && input.Size > 0 {
 		rand.Seed(time.Now().UTC().UnixNano())
 		pieces := []int64{}
 		for i := int64(0); i < input.Size; i++ {
@@ -71,7 +99,7 @@ func (w *Mouth) Handler(inputInst interface{}) (interface{}, error) {
 			}
 		}
 		time.Sleep(time.Duration(n) * time.Millisecond)
-		feedStomach.EatTime = n	
+		feedStomach.EatTime = float64(n)
 	}
 
 	// forward digest options
