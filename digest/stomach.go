@@ -44,7 +44,14 @@ func (w *Stomach) Handler(cumulationInst interface{}, previousResults []interfac
 	}
 
 	// aggregate subtasks
-	if subtaskResult.Cmd == "merge" || subtaskResult.Cmd == "gen and merge" || subtaskResult.Cmd == "gen and merge and wait"{
+	if subtaskResult.Cmd == "count" {
+		if cumulation == nil {
+			result = subtaskResult
+		} else {
+			result.Size = cumulation.Size + subtaskResult.Size
+			log.Println("[stomach] stomach counted the subtask result")
+		}	
+	} else if subtaskResult.Cmd == "merge" || subtaskResult.Cmd == "gen and merge" || subtaskResult.Cmd == "gen and merge and wait"{
 		if cumulation == nil {
 			result = subtaskResult
 		} else {

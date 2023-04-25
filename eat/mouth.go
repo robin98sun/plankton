@@ -46,7 +46,7 @@ func (w *Mouth) Handler(inputInst interface{}) (interface{}, error) {
 		EatTime:   float64(input.Size),
 	}
 	// do some job
-	if (input.Cmd == "find prime numbers") {
+	if (input.Cmd == "find prime numbers and count") {
 
 		is_prime_number := func(n int64) bool {
 			for i := int64(2); i<n; i++ {
@@ -70,7 +70,7 @@ func (w *Mouth) Handler(inputInst interface{}) (interface{}, error) {
 		feedStomach.Pieces = prime_number_list
 		feedStomach.Size   = input.EndPoint - input.StartPoint + 1
 		feedStomach.EatTime = float64((endTime.Sub(startTime))*time.Millisecond)
-		feedStomach.Cmd = "merge"
+		feedStomach.Cmd = "count"
 
 	} else if (input.Cmd == "gen and merge" || input.Cmd == "gen and merge and wait") && input.Size > 0 {
 		rand.Seed(time.Now().UTC().UnixNano())
