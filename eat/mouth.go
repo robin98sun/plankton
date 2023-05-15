@@ -67,8 +67,9 @@ func (w *Mouth) Handler(inputInst interface{}) (interface{}, error) {
 		}
 
 		endTime := time.Now()
-		feedStomach.Pieces = prime_number_list
-		feedStomach.Size   = input.EndPoint - input.StartPoint + 1
+		// feedStomach.Pieces = prime_number_list
+		// feedStomach.Size   = input.EndPoint - input.StartPoint + 1
+		feedStomach.Size = len(prime_number_list)
 		feedStomach.EatTime = float64((endTime.Sub(startTime))*time.Millisecond)
 		feedStomach.Cmd = "count"
 
